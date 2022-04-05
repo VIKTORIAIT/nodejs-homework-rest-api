@@ -5,23 +5,31 @@ const {
   removeContact,
   addContact,
   updateContact,
-} = require("../../models/contacts");
+  updateStatusContact,
+} = require("../../service/contacts");
 
 const {
   validateAddedContact,
   validateUpdatedContact,
-} = require("../../middlewares/validation");
+  validateFavField,
+} = require("../../middleware/validation");
+
+const { authorize } = require("../../auth/authorize.middleware");
+
+// authorize
 
 const router = express.Router();
 
-router.get("/", listContacts);
+router.get("/", authorize(), listContacts);
 
 router.get("/:contactId", getContactById);
 
-router.post("/", validateAddedContact, addContact);
+router.post("/", validateAddedContact, authorize(), addContact);
 
 router.delete("/:contactId", removeContact);
 
 router.put("/:contactId", validateUpdatedContact, updateContact);
+
+router.patch("/:contactId/favorite", validateFavField, updateStatusContact);
 
 module.exports = router;
